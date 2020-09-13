@@ -3,3 +3,5 @@
 # DIRS
 venv/
 
+# Misc
+.DS_Store

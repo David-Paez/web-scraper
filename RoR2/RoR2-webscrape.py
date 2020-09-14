@@ -1,27 +1,41 @@
 from bs4 import BeautifulSoup
 import requests
 
-source = requests.get('https://riskofrain2.gamepedia.com/Items').text
+def get_links():
+    source = requests.get('https://riskofrain2.gamepedia.com/Items').text
+    items_page = BeautifulSoup(source, 'lxml')
 
-items_page = BeautifulSoup(source, 'lxml')
+    # tbody is the whole chart
+    items_chart = items_page.tbody.findAll("tr")
 
-# tbody is the whole chart
-items_chart = items_page.tbody.findAll("tr")
+    items_rows = []
 
-items_rows = []
+    for row in items_chart:
+        items_rows.append(row.findAll("td"))
 
-for row in items_chart:
-    items_rows.append(row.findAll("td"))
+    item_links = []
+    for row in items_rows:
+        for item in row:
+            print(item.a['title'])
+            link = "https://riskofrain2.gamepedia.com" + item.a['href']
+            print(link)
+            item_links.append(link)
+            print("")
 
-for row in items_rows:
-    for item in row:
-        print(item.a['title'])
-        print("https://riskofrain2.gamepedia.com" + item.a['href'])
-        print("")
+    return item_links
 
-# print(items_page.tbody.tr.td.a['title'])
+def scrape_info(link):    
+    item_link = requests.get(link).text
+    item_page = BeautifulSoup(item_link, 'lxml')
 
-# for item in item_chart.tr.findAll('td'):
-#     print(item.a['title'])
+    print(item_page.prettify())
 
-#     print("")
+def main():
+    links = get_links()
+    scrape_info(links[0])
+
+main()
+
+# for link in item_links:
+    # item_link = requests.get(link).text
+    # item_page = BeautifulSoup(item_link, 'lxml')

@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
+
 def get_links():
     source = requests.get('https://riskofrain2.gamepedia.com/Items').text
     items_page = BeautifulSoup(source, 'lxml')
@@ -24,8 +25,9 @@ def get_links():
 
     return item_links
 
-def scrape_info(links): 
-    link = links[0]
+
+def scrape_info(links):
+    link = links[120]
     item_link = requests.get(link).text
     item_page = BeautifulSoup(item_link, 'lxml')
 
@@ -36,23 +38,59 @@ def scrape_info(links):
     item_image_link = item_box.img['src']
     item_quick_desc = item_box.find("td", class_="infoboxdesc")
 
-    print(item_image_link)
+    print(item_name)
+    for row in item_box_rows:
+        try:
+            if str.find(row.td.text, "Rarity") > -1:
+                print(row.a.text)
+        except:
+            pass
+
+        try:
+            if str.find(row.td.text, "Category") > -1:
+                print(row.a.text)
+        except:
+            pass
+
+        try:
+            if str.find(row.td.text, "Cooldown") > -1:
+                print(row.findNext('td').findNext('td').text)
+        except:
+            pass
+
+        try:
+            if str.find(row.td.text, "Unlock") > -1:
+                print(row.a.text)
+        except:
+            pass
+        
+    # Finds Rarity anywhere
+    # print(item_page.find(text="Rarity"))
+
+        # try:
+        #     if str.find(row.td.text, "Cooldown") > -1:
+        #         print(row.a.text)
+        # except:
+        #     pass
+
+    # print(item_box_rows)
     # item_image_link = item_box_rows[1].a.img['src']
     # item_small_desc = item_box_rows[2].td.text
     # item_quick_desc = item_box_rows[3].text
     # item_rarity = item_box_rows[4].a.text
     # item_category = item_box_rows[5].text
-    
 
-    # print(item_name + "\n" + item_image_link + "\n" + item_small_desc + "\n" + item_quick_desc 
+    # print(item_name + "\n" + item_image_link + "\n" + item_small_desc + "\n" + item_quick_desc
     # + "\n" + item_rarity + "\n" + item_category)
+
 
 def main():
     links = get_links()
     scrape_info(links)
 
+
 main()
 
 # for link in item_links:
-    # item_link = requests.get(link).text
-    # item_page = BeautifulSoup(item_link, 'lxml')
+# item_link = requests.get(link).text
+# item_page = BeautifulSoup(item_link, 'lxml')

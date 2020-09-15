@@ -26,8 +26,8 @@ def get_links():
     return item_links
 
 
-def scrape_info(links):
-    link = links[120]
+def scrape_item(links):
+    link = links[0]
     item_link = requests.get(link).text
     item_page = BeautifulSoup(item_link, 'lxml')
 
@@ -36,33 +36,32 @@ def scrape_info(links):
     item_box = item_page.find("table", class_="infoboxtable").tbody
     item_box_rows = item_box.findAll("tr")
     item_image_link = item_box.img['src']
-    item_quick_desc = item_box.find("td", class_="infoboxdesc")
+    item_quick_desc = item_box.find("td", class_="infoboxdesc").text
 
-    print(item_name)
     for row in item_box_rows:
         try:
             if str.find(row.td.text, "Rarity") > -1:
-                print(row.a.text)
+                item_rarity = row.a.text
         except:
-            pass
+            item_rarity = "N/A"
 
         try:
             if str.find(row.td.text, "Category") > -1:
-                print(row.a.text)
+                item_category = row.a.text
         except:
-            pass
+            item_category = "N/A"
 
         try:
             if str.find(row.td.text, "Cooldown") > -1:
-                print(row.findNext('td').findNext('td').text)
+                cooldown = row.findNext('td').findNext('td').text
         except:
-            pass
+            item_cooldown = "N/A"
 
         try:
             if str.find(row.td.text, "Unlock") > -1:
-                print(row.a.text)
+                item_unlock = row.a.text
         except:
-            pass
+            item_unlock = "N/A"
         
     # Finds Rarity anywhere
     # print(item_page.find(text="Rarity"))
@@ -80,13 +79,16 @@ def scrape_info(links):
     # item_rarity = item_box_rows[4].a.text
     # item_category = item_box_rows[5].text
 
-    # print(item_name + "\n" + item_image_link + "\n" + item_small_desc + "\n" + item_quick_desc
-    # + "\n" + item_rarity + "\n" + item_category)
+    print("Item Name: "+ item_name + "\n" + "Image Link: " + item_image_link + "\n" + "Image Quick Desc:" + item_quick_desc
+    + "\n" + "Item Rarity: " + item_rarity + "\n" + "Item Category: " + item_category + "\n" + 
+    "Item Cooldown: " + item_cooldown + "\n" + "Item Unlock: " + item_unlock)
+
+    print("")
 
 
 def main():
     links = get_links()
-    scrape_info(links)
+    scrape_item(links)
 
 
 main()

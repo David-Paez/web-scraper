@@ -27,63 +27,68 @@ def get_links():
 
 
 def scrape_item(links):
-    link = links[0]
-    item_link = requests.get(link).text
-    item_page = BeautifulSoup(item_link, 'lxml')
+    for link in links:
+        item_link = requests.get(link).text
+        item_page = BeautifulSoup(item_link, 'lxml')
 
-    item_name = item_page.h1.text
+        item_name = item_page.h1.text
 
-    item_box = item_page.find("table", class_="infoboxtable").tbody
-    item_box_rows = item_box.findAll("tr")
-    item_image_link = item_box.img['src']
-    item_quick_desc = item_box.find("td", class_="infoboxdesc").text
+        item_box = item_page.find("table", class_="infoboxtable").tbody
+        item_box_rows = item_box.findAll("tr")
+        item_image_link = item_box.img['src']
+        item_quick_desc = item_box.find("td", class_="infoboxdesc").text
 
-    for row in item_box_rows:
-        try:
-            if str.find(row.td.text, "Rarity") > -1:
-                item_rarity = row.a.text
-        except:
-            item_rarity = "N/A"
+        item_rarity = "N/A"
+        item_category = "N/A"
+        item_cooldown = "N/A"
+        item_unlock = "N/A"
 
-        try:
-            if str.find(row.td.text, "Category") > -1:
-                item_category = row.a.text
-        except:
-            item_category = "N/A"
+        for row in item_box_rows:
+            try:
+                if str.find(row.td.text, "Rarity") > -1:
+                    item_rarity = row.a.text
+            except:
+                pass
 
-        try:
-            if str.find(row.td.text, "Cooldown") > -1:
-                cooldown = row.findNext('td').findNext('td').text
-        except:
-            item_cooldown = "N/A"
+            try:
+                if str.find(row.td.text, "Category") > -1:
+                    item_category = row.a.text
+            except:
+                pass
 
-        try:
-            if str.find(row.td.text, "Unlock") > -1:
-                item_unlock = row.a.text
-        except:
-            item_unlock = "N/A"
-        
-    # Finds Rarity anywhere
-    # print(item_page.find(text="Rarity"))
+            try:
+                if str.find(row.td.text, "Cooldown") > -1:
+                    item_cooldown = row.findNext('td').findNext('td').text
+            except:
+                pass
 
-        # try:
-        #     if str.find(row.td.text, "Cooldown") > -1:
-        #         print(row.a.text)
-        # except:
-        #     pass
+            try:
+                if str.find(row.td.text, "Unlock") > -1:
+                    item_unlock = row.a.text
+            except:
+                pass
+            
+        # Finds Rarity anywhere
+        # print(item_page.find(text="Rarity"))
 
-    # print(item_box_rows)
-    # item_image_link = item_box_rows[1].a.img['src']
-    # item_small_desc = item_box_rows[2].td.text
-    # item_quick_desc = item_box_rows[3].text
-    # item_rarity = item_box_rows[4].a.text
-    # item_category = item_box_rows[5].text
+            # try:
+            #     if str.find(row.td.text, "Cooldown") > -1:
+            #         print(row.a.text)
+            # except:
+            #     pass
 
-    print("Item Name: "+ item_name + "\n" + "Image Link: " + item_image_link + "\n" + "Image Quick Desc:" + item_quick_desc
-    + "\n" + "Item Rarity: " + item_rarity + "\n" + "Item Category: " + item_category + "\n" + 
-    "Item Cooldown: " + item_cooldown + "\n" + "Item Unlock: " + item_unlock)
+        # print(item_box_rows)
+        # item_image_link = item_box_rows[1].a.img['src']
+        # item_small_desc = item_box_rows[2].td.text
+        # item_quick_desc = item_box_rows[3].text
+        # item_rarity = item_box_rows[4].a.text
+        # item_category = item_box_rows[5].text
 
-    print("")
+        print("Item Name: "+ item_name + "\n" + "Image Link: " + item_image_link + "\n" + "Image Quick Desc:" + item_quick_desc
+        + "\n" + "Item Rarity: " + item_rarity + "\n" + "Item Category: " + item_category + "\n" + 
+        "Item Cooldown: " + item_cooldown + "\n" + "Item Unlock: " + item_unlock)
+
+        print("")
 
 
 def main():

@@ -26,17 +26,20 @@ def get_links():
     return item_links
 
 
-def scrape_item(links):
+def scrape_item(links, file):
+    headers = "item_name, item_image_link, item_quick_desc, item_rarity, item_category, item_cooldown, item_unlock\n"
+    file.write(headers)
+
     for link in links:
         item_link = requests.get(link).text
         item_page = BeautifulSoup(item_link, 'lxml')
 
-        item_name = item_page.h1.text
+        item_name = "\"" + item_page.h1.text + "\""
 
         item_box = item_page.find("table", class_="infoboxtable").tbody
         item_box_rows = item_box.findAll("tr")
         item_image_link = item_box.img['src']
-        item_quick_desc = item_box.find("td", class_="infoboxdesc").text
+        item_quick_desc = "\"" + item_box.find("td", class_="infoboxdesc").text.strip() + "\""
 
         item_rarity = "N/A"
         item_category = "N/A"
@@ -57,8 +60,8 @@ def scrape_item(links):
                 pass
 
             try:
-                if str.find(row.td.text, "Cooldown") > -1:
-                    item_cooldown = row.findNext('td').findNext('td').text
+                if str.find(row.td.text, "Cooldown") > -1 and "%" not in row.findNext('td').findNext('td').text:
+                    item_cooldown = row.findNext('td').findNext('td').text.strip()
             except:
                 pass
 
@@ -71,29 +74,21 @@ def scrape_item(links):
         # Finds Rarity anywhere
         # print(item_page.find(text="Rarity"))
 
-            # try:
-            #     if str.find(row.td.text, "Cooldown") > -1:
-            #         print(row.a.text)
-            # except:
-            #     pass
-
-        # print(item_box_rows)
-        # item_image_link = item_box_rows[1].a.img['src']
-        # item_small_desc = item_box_rows[2].td.text
-        # item_quick_desc = item_box_rows[3].text
-        # item_rarity = item_box_rows[4].a.text
-        # item_category = item_box_rows[5].text
-
-        print("Item Name: "+ item_name + "\n" + "Image Link: " + item_image_link + "\n" + "Image Quick Desc:" + item_quick_desc
+        print("Item Name: "+ item_name + "\n" + "Image Link: " + item_image_link + "\n" + "Image Quick Desc: " + item_quick_desc
         + "\n" + "Item Rarity: " + item_rarity + "\n" + "Item Category: " + item_category + "\n" + 
         "Item Cooldown: " + item_cooldown + "\n" + "Item Unlock: " + item_unlock)
 
         print("")
 
+        file.write(item_name + "," + item_image_link + "," + item_quick_desc + "," + item_rarity + "," + item_category 
+        + "," + item_cooldown + "," + item_unlock + "\n")
+
 
 def main():
+    f = open("RoR2-items.csv", "w")
     links = get_links()
-    scrape_item(links)
+    scrape_item(links, f)
+    f.close()
 
 
 main()
